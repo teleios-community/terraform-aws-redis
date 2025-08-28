@@ -1,17 +1,13 @@
 # Terraform
 .terraform/
-*.tfstate
-*.tfstate.*
-crash.log
-override.tf
-override.tf.json
-*.override.tf
-*.override.tf.json
 .terraform.lock.hcl
-terraform.tfvars
+terraform.tfstate
+terraform.tfstate.*
+crash.log
+*.tfvars
+*.tfvars.json
 *.auto.tfvars
-
-
-# OS
-.DS_Store
-Thumbs.db   
+*.backup
+# Plans
+tfplan*
+*.plan

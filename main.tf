@@ -1,24 +1,20 @@
 locals {
-  name_base = "${var.project_prefix}-redis"
+  name_base   = "${var.project_prefix}-redis"
+  total_nodes = 1 + var.replica_count
 }
 
-# Parameter group (optional tuning – safe to keep default family)
 resource "aws_elasticache_parameter_group" "this" {
   name   = "${local.name_base}-param"
   family = "redis7"
   tags   = var.tags
 }
 
-
-# Subnet group (private subnets only)
 resource "aws_elasticache_subnet_group" "this" {
   name       = "${local.name_base}-subnets"
   subnet_ids = var.private_subnet_ids
   tags       = var.tags
 }
 
-
-# Security Group for Redis (ingress ONLY from app SG on port 6379)
 resource "aws_security_group" "redis" {
   name        = "${local.name_base}-sg"
   description = "Redis access from App EC2 only"
@@ -43,7 +39,6 @@ resource "aws_security_group_rule" "from_app_to_redis" {
   description              = "Allow App EC2 to reach Redis"
 }
 
-# Replication group (works for single-node or HA)
 resource "aws_elasticache_replication_group" "this" {
   replication_group_id = "${replace(local.name_base, "_", "-")}-rg"
   description          = "Teleios Week8 Redis for ${var.project_prefix}"
@@ -57,22 +52,19 @@ resource "aws_elasticache_replication_group" "this" {
   subnet_group_name    = aws_elasticache_subnet_group.this.name
   security_group_ids   = [aws_security_group.redis.id]
 
-  # Encryption
-  at_rest_encryption_enabled = true
-  transit_encryption_enabled = true
+  at_rest_encryption_enabled  = true
+  transit_encryption_enabled  = true
+  auth_token                  = var.auth_token
 
-  # Auth token (null in dev, set in prod)
-  auth_token = var.auth_token
+  num_cache_clusters         = local.total_nodes
+  automatic_failover_enabled = var.replica_count > 0
+  multi_az_enabled           = var.multi_az_enabled
 
-  # ---- Non-clustered, single-node (dev/cost-safe) ----
-  num_cache_clusters         = 1
-  automatic_failover_enabled = false
-  multi_az_enabled           = false
-
-  # Maintenance & snapshots
   maintenance_window       = var.maintenance_window
   snapshot_window          = var.snapshot_window
   snapshot_retention_limit = var.snapshot_retention
 
   tags = var.tags
+
+  depends_on = [aws_elasticache_subnet_group.this]
 }
