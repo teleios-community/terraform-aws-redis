@@ -20,3 +20,6 @@ terraform.tfstate*
 *.auto.tfvars
 *.plan
 tfplan*
+
+# Ignore nested infra repo
+AWS-e-commerce-infrastructure/
