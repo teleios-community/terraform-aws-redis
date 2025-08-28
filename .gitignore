@@ -11,3 +11,12 @@ crash.log
 # Plans
 tfplan*
 *.plan
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate*
+*.tfvars
+*.auto.tfvars
+*.plan
+tfplan*
