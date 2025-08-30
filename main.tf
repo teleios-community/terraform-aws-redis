@@ -15,29 +15,29 @@ resource "aws_elasticache_subnet_group" "this" {
   tags       = var.tags
 }
 
-resource "aws_security_group" "redis" {
-  name        = "${local.name_base}-sg"
-  description = "Redis access from App EC2 only"
-  vpc_id      = var.vpc_id
-  tags        = var.tags
+#resource "aws_security_group" "redis" {
+#  name        = "${local.name_base}-sg"
+#  description = "Redis access from App EC2 only"
+#  vpc_id      = var.vpc_id
+#  tags        = var.tags
+#
+#  egress {
+#    from_port   = 0
+#    to_port     = 0
+#   protocol    = "-1"
+#    cidr_blocks = ["0.0.0.0/0"]
+#  }
+#}
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_security_group_rule" "from_app_to_redis" {
-  type                     = "ingress"
-  security_group_id        = aws_security_group.redis.id
-  from_port                = var.port
-  to_port                  = var.port
-  protocol                 = "tcp"
-  source_security_group_id = var.app_sg_id
-  description              = "Allow App EC2 to reach Redis"
-}
+#resource "aws_security_group_rule" "from_app_to_redis" {
+#  type                     = "ingress"
+#  security_group_id        = aws_security_group.redis.id
+#  from_port                = var.port
+#  to_port                  = var.port
+#  protocol                 = "tcp"
+#  source_security_group_id = var.app_sg_id
+#  description              = "Allow App EC2 to reach Redis"
+#}
 
 resource "aws_elasticache_replication_group" "this" {
   replication_group_id = "${replace(local.name_base, "_", "-")}-rg"
@@ -50,7 +50,7 @@ resource "aws_elasticache_replication_group" "this" {
 
   parameter_group_name = aws_elasticache_parameter_group.this.name
   subnet_group_name    = aws_elasticache_subnet_group.this.name
-  security_group_ids   = [aws_security_group.redis.id]
+  security_group_ids   = [var.redis_sg_id]
 
   at_rest_encryption_enabled  = true
   transit_encryption_enabled  = true
@@ -68,3 +68,4 @@ resource "aws_elasticache_replication_group" "this" {
 
   depends_on = [aws_elasticache_subnet_group.this]
 }
+
