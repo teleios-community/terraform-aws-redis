@@ -26,7 +26,7 @@ variable "multi_az_enabled" {
   default = false
 }
 
-variable "allowed_from_sg_id" { type = string }
+# variable "allowed_from_sg_id" { type = string }
 variable "redis_vpc_id"       { type = string }
 variable "subnet_ids"         { type = list(string) }
 
