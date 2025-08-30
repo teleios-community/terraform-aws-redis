@@ -4,7 +4,7 @@ variable "project_prefix" {
 }
 variable "vpc_id" { type = string }
 
-variable "app_sg_id" { type = string } # Onitcha's EC2 SG – allowed to talk to Redis
+variable "redis_sg_id" { type = string } # Onitcha's EC2 SG – allowed to talk to Redis
 
 variable "engine_version" {
   type    = string
@@ -82,4 +82,5 @@ variable "tags" {
     ManagedBy   = "Terraform"
     Owner       = "TeleiosTeam"
   }
+
 }
